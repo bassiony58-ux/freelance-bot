@@ -1,0 +1,37 @@
+name: Scrape Freelance Sites
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # يفحص كل 5 دقائق تلقائياً
+  workflow_dispatch:      # يتيح لك تشغيله يدوياً للتجربة
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # إعطاء صلاحية لتعديل وحفظ الملفات في المستودع
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4
+
+    - name: Run bot
+      env:
+        NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+      run: python bot.py
+
+    - name: Commit and Push changes
+      run: |
+        git config --global user.name "Freelance Bot"
+        git config --global user.email "bot@freelance.com"
+        git add seen_projects.json
+        git diff-index --quiet HEAD || git commit -m "Update seen projects [skip ci]"
+        git push
