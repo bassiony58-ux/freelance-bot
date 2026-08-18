@@ -9,7 +9,7 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write     # إعطاء صلاحية لتعديل وحفظ الملفات في المستودع
+      contents: write     # صلاحية تعديل وحفظ الملفات
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -34,4 +34,5 @@ jobs:
         git config --global user.email "bot@freelance.com"
         git add seen_projects.json
         git diff-index --quiet HEAD || git commit -m "Update seen projects [skip ci]"
+        git pull --rebase origin main  # دمج أي تعديلات خارجية لتفادي التعارض
         git push
