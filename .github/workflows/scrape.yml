@@ -2,20 +2,20 @@ name: Scrape Freelance Sites
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # يفحص كل 5 دقائق تلقائياً
-  workflow_dispatch:      # يتيح لك تشغيله يدوياً للتجربة
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
     permissions:
-      contents: write     # صلاحية تعديل وحفظ الملفات
+      contents: write
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -32,7 +32,7 @@ jobs:
       run: |
         git config --global user.name "Freelance Bot"
         git config --global user.email "bot@freelance.com"
-        git add seen_projects.json
-        git diff-index --quiet HEAD || git commit -m "Update seen projects [skip ci]"
-        git pull --rebase origin main  # دمج أي تعديلات خارجية لتفادي التعارض
-        git push
+        git add seen_projects.json || true
+        git commit -m "Update seen projects [skip ci]" || exit 0
+        git pull --rebase origin main || true
+        git push || true
